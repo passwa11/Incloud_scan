@@ -1,0 +1,25 @@
+id: bypass_smuggling_api_xss
+
+info:
+  name: bypass_smuggling_api_xss
+  author: Jaky
+  severity: critical
+  description: bypass_smuggling_api_xss
+
+  reference: "https://github.com/Jaky5155"
+  tags: smuggling_,bypass,xss
+
+requests:
+  - method: GET
+    path:
+      - "{{RootURL}}/api/me?_**2=alert(1)"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "alert(1)"

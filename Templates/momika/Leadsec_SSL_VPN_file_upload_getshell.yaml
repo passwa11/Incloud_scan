@@ -1,0 +1,17 @@
+name: Leadsec_SSL_VPN_file_upload_getshell
+transport: http
+set: {}
+detail:
+  dock: app="Leadsec-SSL-VPN"
+  product: Leadsec-SSL-VPN
+  homepage: http://www.leadsec.com.cn/
+  impact: ''
+  description: The attacker can directly access the Leadsec SSL VPN backend and then
+    access the upload page to upload files without logging in.
+rules:
+  r1:
+    method: GET
+    path: /SSL/ali.jsp
+    follow_redirects: true
+    expression: response.status == 200 && response.body.bcontains(b'hello,world')
+expression: r1()

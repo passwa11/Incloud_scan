@@ -1,0 +1,18 @@
+name: Apache Solr任意文件读取漏洞
+transport: http
+set: {}
+detail:
+  dock: app="Solr"
+  product: Apache Solr
+  homepage: https://solr.apache.org/
+  impact: '<p><span style="color: rgb(65, 140, 175);">咩咩咩🐏</span></p>'
+  description: Apache Solr has an arbitrary file read vulnerability, which allows
+    attackers to obtain sensitive files from the target server without authorization.
+rules:
+  r1:
+    method: GET
+    path: /solr/admin/cores?indexInfo=false&wt=json
+    follow_redirects: true
+    headers: {}
+    expression: response.status == 200 && response.body.bcontains(b'responseHeader')
+expression: r1()

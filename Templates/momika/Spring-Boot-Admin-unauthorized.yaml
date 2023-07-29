@@ -1,0 +1,30 @@
+id: Spring-Boot-Admin-unauthorized
+
+info:
+  name: Spring_Boot_Admin_unauthorized
+  author: momika233
+  severity: high
+  description: Spring_Boot_Admin_unauthorized
+  reference:
+    - https://www.github.com/momika233
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N
+    cvss-score: 8.6
+    cwe-id: CWE-22
+  tags: Spring,Boot,Admin,unauthorized
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/applications"
+
+    matchers-condition: and
+    matchers:
+
+      - type: regex
+        regex:
+          - "SPRING-BOOT-ADMIN-SERVER.*"
+
+      - type: status
+        status:
+          - 200

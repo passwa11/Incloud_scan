@@ -1,0 +1,27 @@
+name: F5_BIG_IP_iControl_REST_API_auth_bypass_CVE_2022_1388
+transport: http
+set: {}
+detail:
+  dock: app="f5-bigip" || product="F5-BIGIP"
+  product: F5 Big-IP
+  homepage: https://www.f5.com/
+  impact: 'On F5 BIG-IP 16.1.x versions prior to 16.1.2.2, 15.1.x versions prior to
+    15.1.5.1, 14.1.x versions prior to 14.1.4.6, 13.1.x versions prior to 13.1.5,
+    and all 12.1.x and 11.6.x versions, undisclosed requests may bypass iControl REST
+    authentication. Note: Software versions which have reached End of Technical Support
+    (EoTS) are not evaluated.'
+  description: BIG-IP software products are licensed modules that run on top of F5's
+    Traffic Management Operation System® (TMOS). This custom operating system is an
+    event driven operating system designed specifically to inspect network and application
+    traffic and make real-time decisions based on the configurations you provide.
+rules:
+  r1:
+    method: GET
+    path: /mgmt/shared/authn/login
+    follow_redirects: true
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/97.0.4692.71 Safari/537.36
+    expression: response.status == 200 && response.body.bcontains(b'resterrorresponse')
+      && response.body.bcontains(b'Authorization failed')
+expression: r1()
